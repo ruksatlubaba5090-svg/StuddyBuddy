@@ -136,7 +136,7 @@ body {
     <div class="header-title">Study Buddy</div>
     <div class="header-right">
         <!-- Profile picture linking to My Profile -->
-        <a href="my_profile.php" class="profile-link" title="My Profile"></a>
+        <a href="My_Profile.php" class="profile-link" title="My Profile"></a>
         <!-- Logout -->
         <a href="logout.php" class="logout-btn">Logout</a>
     </div>

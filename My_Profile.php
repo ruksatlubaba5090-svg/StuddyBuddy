@@ -3,43 +3,45 @@ include 'config.php';
 session_start();
 
 /* Redirect if not logged in */
-if (!isset($_SESSION['student_id'])) {
+if (!isset($_SESSION['Student_id'])) {
     header("Location: login.php");
     exit();
 }
 
-$student_id = $_SESSION['student_id'];
+$student_id = $_SESSION['Student_id'];
 
 /* Student Info */
-$student_q = "SELECT * FROM Student WHERE Student_Id = '$student_id'";
-$student = mysqli_fetch_assoc(mysqli_query($conn, $student_q));
+$student_q = "SELECT * FROM student WHERE Student_Id = '$student_id'";
+$student_res = mysqli_query($conn, $student_q);
+$student = mysqli_fetch_assoc($student_res);
 
 /* Stats */
+/* Sessions hosted by the student */
 $host_count = mysqli_num_rows(mysqli_query(
-    $conn, "SELECT * FROM Study_post WHERE Student_ID = '$student_id'"
+    $conn, "SELECT * FROM study_post WHERE Student_ID = '$student_id'"
 ));
+
+/* Sessions joined by the student */
 $join_count = mysqli_num_rows(mysqli_query(
-    $conn, "SELECT * FROM Interested_student WHERE Interest_Student_ID = '$student_id'"
+    $conn, "SELECT * FROM interested_student WHERE Interest_Student_ID = '$student_id'"
 ));
+
 $total_points = ($host_count * 10) + ($join_count * 5);
 
-/* Courses */
+/* Courses enrolled */
 $courses = mysqli_query($conn, "
-    SELECT c.Course_Code, c.Course_Name
-    FROM Course_Enrollment e
-    JOIN Course c ON e.Course_Code = c.Course_Code
-    WHERE e.Student_ID = '$student_id'
-      AND e.Semester_Status = 'Present'
+    SELECT Course_code, Course_Name
+    FROM Course_Enrollment
+    WHERE Student_ID = '$student_id' AND Semester = 'Present'
 ");
 
-/* Feed */
+/* Feed posts for student's courses */
 $posts = mysqli_query($conn, "
     SELECT p.*, s.Name AS Author
     FROM Study_post p
-    JOIN Student s ON p.Student_ID = s.Student_Id
-    JOIN Course_Enrollment e ON p.Course_Code = e.Course_Code
-    WHERE e.Student_ID = '$student_id'
-      AND e.Semester_Status = 'Present'
+    JOIN Student s ON p.Student_id = s.Student_id
+    JOIN Course_Enrollment e ON p.Course_code = e.Course_code
+    WHERE e.Student_id = '$student_id' AND e.Semester = 'Present'
     ORDER BY p.Date_Post DESC
 ");
 ?>
