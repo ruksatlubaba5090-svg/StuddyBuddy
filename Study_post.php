@@ -1,3 +1,25 @@
+<?php
+session_start();
+include 'config.php';
+
+/* Fetch real posts */
+$posts = mysqli_query($conn, "
+    SELECT 
+        sp.Post_ID,
+        sp.Study_type,
+        sp.Study_time,
+        sp.Post_date,
+        sp.Description,
+        sp.Subject_name,
+        sp.Course_code,
+        s.Name AS student_name
+    FROM study_post sp
+    JOIN student s ON sp.Student_ID = s.Student_id
+    ORDER BY sp.Post_date DESC
+");
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -128,18 +150,22 @@
 
         .post-top {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            justify-content: flex-start;
             align-items: center;
+            gap: 10px;
         }
 
-        .course-badge {
-            background: #f3e8ff;
-            color: #7c3aed;
+        .course-badge, .study-mode-badge, .study-type-badge {
             padding: 6px 14px;
             border-radius: 10px;
             font-weight: 700;
             font-size: 13px;
         }
+
+        .course-badge { background: #f3e8ff; color: #7c3aed; }
+        .study-mode-badge { background: #22c55e; color: white; } /* Duo / Group */
+        .study-type-badge { background: #2563eb; color: white; } /* Homework, Exam Prep, Deep Work */
 
         .post-user { font-weight: 600; font-size: 17px; }
 
@@ -175,8 +201,8 @@
     <div class="header">
         <div class="header-title">Study Buddy</div>
         <div class="nav-links">
-            <a href="dashboard.php">Dashboard</a>
-            <a href="logout.php">Sign Out</a>
+            <a href="Student_Dashboard.php">Dashboard</a>
+            <a href="logout.php">Log Out</a>
         </div>
     </div>
 
@@ -188,10 +214,9 @@
                 <input type="text" name="subject_name" placeholder="Subject Topic" required>
                 
                 <select name="study_type">
-                    <option value="Exam Prep">Exam Prep</option>
-                    <option value="Homework">Homework Help</option>
-                    <option value="Deep Work">Deep Work / Silent</option>
-                </select>
+                    <option value="Duo">Duo</option>
+                    <option value="Group">Group</option>
+                </select>  
 
                 <input type="datetime-local" name="study_time" required>
 
@@ -203,21 +228,42 @@
 
         <div class="feed-header">Active Sessions</div>
 
-        <div class="post-card">
-            <div class="post-top">
-                <span class="post-user">Sarah Miller</span>
-                <span class="course-badge">BIO204</span>
-            </div>
-            <div class="post-description">
-                Working on the lab report for Cellular Respiration. If anyone has the data from Tuesday's class, let's compare!
-            </div>
-            <div class="post-meta">
-                <div class="meta-data">
-                    📅 Dec 28 | 🕒 5:30 PM | 👥 3 Interested
+        <?php if (mysqli_num_rows($posts) > 0): ?>
+
+            <?php while ($p = mysqli_fetch_assoc($posts)): ?>
+                <div class="post-card">
+                    <div class="post-top">
+                        <span class="post-user"><?php echo htmlspecialchars($p['student_name']); ?></span>
+                        <span class="course-badge"><?php echo htmlspecialchars($p['Course_code']); ?></span>
+                        <span class="study-mode-badge"><?php echo htmlspecialchars($p['Study_type']); ?></span>
+                    </div>
+
+                    <div class="post-description">
+                        <?php echo nl2br(htmlspecialchars($p['Description'])); ?>
+                    </div>
+
+                    <div class="post-meta">
+                        <div class="meta-data">
+                            📅 <?php echo date('M d', strtotime($p['Post_date'])); ?>
+                            | 🕒 <?php echo date('g:i A', strtotime($p['Study_time'])); ?>
+                        </div>
+                        <form action="interest_logic.php" method="POST">
+                            <input type="hidden" name="post_id" value="<?= $p['Post_ID'] ?>">
+                            <button type="submit" class="btn-interest">Join In</button>
+                        </form>
+
+                    </div>
                 </div>
-                <button class="btn-interest">Join In</button>
+            <?php endwhile; ?>
+
+        <?php else: ?>
+
+            <div class="post-card" style="text-align:center;">
+                <strong>No posts at the moment</strong>
             </div>
-        </div>
+
+        <?php endif; ?>
+
     </div>
 
 </body>

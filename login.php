@@ -1,3 +1,33 @@
+<?php
+session_start();
+include 'config.php';
+
+if(isset($_POST['Username'], $_POST['Password'])) {
+    $username = mysqli_real_escape_string($conn, $_POST['Username']);
+    $password = $_POST['Password'];
+
+    $sql = "SELECT * FROM student WHERE Username='$username'";
+    $result = mysqli_query($conn, $sql);
+
+    if(mysqli_num_rows($result) === 1) {
+        $user = mysqli_fetch_assoc($result);
+        if(password_verify($password, $user['Password'])) {
+            if($user['verified'] == 0) {
+                die("Your account is not verified yet. Please wait for admin approval.");
+            }
+            // Login success
+            $_SESSION['user_id'] = $user['Student_id'];
+            $_SESSION['user_type'] = 'student';
+            header("Location: Student_Dashboard.php");
+            exit();
+        } else {
+            die("Incorrect password.");
+        }
+    } else {
+        die("No account found with this email.");
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,8 +226,8 @@ button:hover {
         <h2>Login</h2>
 
         <form action="login_check.php" method="POST">
-            <input type="text" name="id" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
+            <input type="text" name="Username" placeholder="Username" required>
+            <input type="password" name="Password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
 
@@ -210,3 +240,4 @@ button:hover {
 
 </body>
 </html>
+

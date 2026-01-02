@@ -44,10 +44,6 @@ body {
     font-size: 15px;
 }
 
-.header-home a:hover {
-    background: white;
-}
-
 /* ===== SIGNUP BOX ===== */
 .signup-container {
     display: flex;
@@ -62,7 +58,6 @@ body {
     padding: 35px;
     border-radius: 18px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-    backdrop-filter: blur(6px);
 }
 
 .signup-box h2 {
@@ -77,12 +72,6 @@ input {
     margin: 12px 0;
     border-radius: 10px;
     border: 1px solid #c4b5fd;
-    font-size: 14px;
-}
-
-input:focus {
-    outline: none;
-    border-color: #a78bfa;
 }
 
 button {
@@ -94,36 +83,17 @@ button {
     font-size: 16px;
     border-radius: 10px;
     cursor: pointer;
-    margin-top: 12px;
 }
 
-button:hover {
-    background: #a855f7;
-}
-
-/* ===== LOGIN LINK ===== */
 .login-text {
     text-align: center;
     margin-top: 18px;
-    font-size: 14px;
-    color: #4b4453;
-}
-
-.login-text a {
-    color: #2563eb;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.login-text a:hover {
-    text-decoration: underline;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
     <div class="header-title">Study Buddy</div>
     <div class="header-home">
@@ -131,16 +101,15 @@ button:hover {
     </div>
 </div>
 
-<!-- SIGNUP FORM -->
 <div class="signup-container">
     <div class="signup-box">
         <h2>Sign Up</h2>
 
         <form action="signup_check.php" method="POST">
-            <input type="text" name="username" placeholder="Username" required autocomplete="username">
-            <input type="email" name="email" placeholder="Email" required autocomplete="email">
-            <input type="password" name="password" placeholder="Password" required autocomplete="new-password">
-            <input type="password" name="confirm_password" placeholder="Confirm Password" required autocomplete="new-password">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required>
             <button type="submit">Sign Up</button>
         </form>
 
@@ -153,5 +122,4 @@ button:hover {
 
 </body>
 </html>
-
 

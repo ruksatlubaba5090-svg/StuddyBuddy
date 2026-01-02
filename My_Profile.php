@@ -3,15 +3,16 @@ include 'config.php';
 session_start();
 
 /* Redirect if not logged in */
-if (!isset($_SESSION['Student_id'])) {
+if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
-$student_id = $_SESSION['Student_id'];
+$student_id = $_SESSION['user_id'];
+
 
 /* Student Info */
-$student_q = "SELECT * FROM student WHERE Student_Id = '$student_id'";
+$student_q = "SELECT * FROM student WHERE Student_id = '$student_id'";
 $student_res = mysqli_query($conn, $student_q);
 $student = mysqli_fetch_assoc($student_res);
 
@@ -23,7 +24,7 @@ $host_count = mysqli_num_rows(mysqli_query(
 
 /* Sessions joined by the student */
 $join_count = mysqli_num_rows(mysqli_query(
-    $conn, "SELECT * FROM interested_student WHERE Interest_Student_ID = '$student_id'"
+    $conn, "SELECT * FROM interested_student WHERE Interested_Student_ID = '$student_id'"
 ));
 
 $total_points = ($host_count * 10) + ($join_count * 5);
@@ -38,11 +39,11 @@ $courses = mysqli_query($conn, "
 /* Feed posts for student's courses */
 $posts = mysqli_query($conn, "
     SELECT p.*, s.Name AS Author
-    FROM Study_post p
-    JOIN Student s ON p.Student_id = s.Student_id
-    JOIN Course_Enrollment e ON p.Course_code = e.Course_code
-    WHERE e.Student_id = '$student_id' AND e.Semester = 'Present'
-    ORDER BY p.Date_Post DESC
+    FROM study_post p
+    JOIN student s ON p.Student_ID = s.Student_id
+    JOIN course_enrollment e ON p.Course_code = e.Course_code
+    WHERE e.Student_ID = '$student_id' AND e.Semester = 'Present'
+    ORDER BY p.Post_date DESC
 ");
 ?>
 
@@ -156,7 +157,7 @@ body {
     <!-- 📖 COURSE FEED -->
     <h2>📖 My Course Feed</h2>
 
-    <?php if (mysqli_num_rows($posts) > 0): ?>
+    <?php if ($posts && mysqli_num_rows($posts) > 0): ?>
         <?php while ($p = mysqli_fetch_assoc($posts)): ?>
             <div class="feed-item">
                 <form action="join_logic.php" method="POST">
@@ -206,6 +207,23 @@ body {
             </div>
         </div>
     </div>
+</div>
+	<div class="profile-top">
+	<div style="text-align:center; margin-bottom:40px;">
+    <a href="my_posts.php" 
+       style="
+           display:inline-block;
+           padding:12px 26px;
+           background:#7c3aed;
+           color:white;
+           text-decoration:none;
+           border-radius:14px;
+           font-weight:600;
+       ">
+        ✏️ Manage My Posts
+    </a>
+    </div>
+
 
 </div>
 

@@ -1,20 +1,21 @@
 <?php
-include 'config.php';
 session_start();
 
-// Redirect to login if not logged in
-if(!isset($_SESSION['student_id'])){
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'student') {
     header("Location: login.php");
     exit();
 }
 
-$student_id = $_SESSION['student_id'];
+include 'config.php';
 
-/* Fetch Student Info */
-$student_q = "SELECT * FROM Student WHERE Student_Id = '$student_id'";
-$student = mysqli_fetch_assoc(mysqli_query($conn, $student_q));
-$username = $student['Name']; // for greeting
+$student_id = $_SESSION['user_id'];
+
+$q = "SELECT Name FROM student WHERE Student_id = '$student_id'";
+$result = mysqli_query($conn, $q);
+$row = mysqli_fetch_assoc($result);
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -145,13 +146,13 @@ body {
 <!-- DASHBOARD CONTENT -->
 <div class="dashboard-container">
     <div class="dashboard-box">
-        <h2>Welcome <?php echo htmlspecialchars($username); ?>!</h2>
+        <h2>Welcome <?php echo htmlspecialchars($row['Name']); ?>!</h2>
         <p>Same Course, Same Time, Better Results</p>
 
         <div class="dashboard-links">
-            <a href="my_courses.php">My Courses</a>
-            <a href="activity_feed.php">Activity Feed</a>
-            <a href="posts.php">Posts</a>
+            <a href="enrollment.php">My Courses</a>
+            <a href="Activity_feed.php">Activity Feed</a>
+            <a href="Study_post.php">Post</a>
         </div>
     </div>
 </div>
